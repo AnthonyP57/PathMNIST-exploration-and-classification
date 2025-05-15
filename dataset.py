@@ -5,10 +5,11 @@ import textwrap
 import torchvision.transforms as transforms
 import torch
 from PIL import Image
+import numpy as np
 
 class GetMedMNIST(Dataset):
     def __init__(self, name='BloodMNIST', split='train', transform=transforms.ToTensor(),
-                 download=True, size=224, verbose=True):
+                 download=True, size=224, hf=True):
         """
         PathMNIST, ChestMNIST, DermaMNIST, OCTMNIST, PneumoniaMNIST, RetinaMNIST,
         BreastMNIST, BloodMNIST, TissueMNIST, OrganAMNIST, OrganCMNIST, OrganSMNIST,
@@ -24,17 +25,10 @@ class GetMedMNIST(Dataset):
         self.info = INFO[name.lower()]
         self.label_str = self.info['label']
         self.n_classes = len(self.label_str)
+        self.hf = hf
         
         self.dataset = getattr(medmnist, self.name)\
             (split=self.split, transform=self.transform, download=download, size=self.size)
-                
-        if verbose:
-            print(f'Chosen dataset: {self.name}')
-            print(f'Chosen split: {self.split}\n')
-            print(f'Classes:')
-            for i,l  in self.info['label'].items():
-                print(f'\t{i:2s} : {l:70} n data points: {getattr(self, f"{i}_len")}')
-            print(f'\n{textwrap.fill(self.info["description"], width=85)}\n')
         
     def __len__(self):
             return len(self.dataset)
@@ -44,4 +38,6 @@ class GetMedMNIST(Dataset):
             img = Image.fromarray(img, mode='RGB')
             img = self.transform(img)
             label = torch.tensor(self.dataset.labels[index], dtype=torch.int64, device=img.device)
+            if self.hf:
+                return {"pixel_values": img, "labels": label}
             return img, label
