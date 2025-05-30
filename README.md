@@ -1,69 +1,61 @@
-# BloodMNIST
-The BloodMNIST dataset is a part of MedMNIST - a collection of 18 (12 2D and 6 3D) standardized datasets for Biomedical Image Classification.
+# PathMNIST
 
-## General characterisitcs
-The BloodMNIST is based on a dataset of individual normal cells, captured from people without infection, hematologic or oncologic disease and free of any pharmacologic treatment at the moment of blood collection. It contains a total of 17,092 images and is organized into 8 classes. The source dataset is split with a ratio of 7:1:2 into training, validation and test set. The source images with resolution 3 × 360 × 363 pixels.
+**PathMNIST** is a part of **MedMNIST** – a collection of standardized biomedical image datasets designed for lightweight deep learning benchmarking. PathMNIST focuses on histopathological image classification of colorectal cancer using hematoxylin and eosin (H&E) stained images.
 
-### Number of data points
-In BloodMNIST there are three splits: **training validaion testing**
+## General Characteristics
 
-|split|train|val|test|
-|---|---|---|---|
-|n data|11,959|1,712|3,421
+PathMNIST consists of RGB image patches resized to 3×28×28 pixels. These are derived from original high-resolution histopathology slides and have been standardized to reduce preprocessing effort and computational load.
 
-### Classes
-There are 8 classes (Multiclass problem):
+- **Modality:** Histopathology (H&E stained)
+- **Total Samples:** 107,180
+- **Type:** Multiclass classification
+- **License:** CC BY 4.0
 
-- 0: basophil
-- 1: eosinophil
-- 2: erythroblast
-- 3: immature granulocytes(myelocytes, metamyelocytes and promyelocytes)
-- 4: lymphocyte
-- 5: monocyte
-- 6: neutrophil
-- 7: platelet
+## Dataset Origin
 
-#### Basophil
-Basophils are the least common granulocytes, constituting about 0.5 – 1% of circulating white blood cells. They contain large, basophilic cytoplasmic granules loaded with histamine, heparin, proteases, and cytokines.
+The PathMNIST dataset was created by preprocessing tiles from:
 
-![](./img/Basophile-9.jpeg)
+- NCT-CRC-HE-100K dataset (originally 224×224 px)
+- Sourced from National Center for Tumor Diseases (NCT), Heidelberg, and UMM, Mannheim
 
-#### Eosinophil
-Eosinophils make up about 1 – 3% of circulating leukocytes, they arise in the bone marrow, then enter blood and tissues (especially the gastrointestinal tract, spleen, and thymus). Eosinophils combat multicellular parasites via degranulation and participate in allergic inflammation (e.g., asthma, atopic dermatitis).
+All images were center-cropped and resized to 28×28 RGB format for lightweight usage.
 
-![](./img/Eosinophil_blood_smear.JPG)
+## Data Splits
 
-#### Erythroblasts
-Erythroblasts (also called normoblasts) are nucleated precursors in the bone marrow that progress through basophilic, polychromatic, and orthochromatic stages as they synthesize hemoglobin. They have a high nucleus‑to‑cytoplasm ratio and condensing chromatin.
+| Split      | Number of Samples |
+|------------|------------------:|
+| Train      | 89,996            |
+| Validation | 10,004            |
+| Test       | 7,180             |
+| **Total**  | **107,180**       |
 
-![https://www.cellwiki.net/en/cells/erythrocytes-erythroblast-basophile](./img/erythroblast.jpg)
+## Classes
 
-#### Immature granulocytes(myelocytes, metamyelocytes and promyelocytes)
-- Myelocytes follow promyelocytes, acquiring lineage‑specific secondary granules (neutrophilic, eosinophilic, or basophilic). They have a round/oval nucleus lacking nucleoli and cannot divide further. 
-Wikipedia
+This dataset has 9 classes representing different tissue types and elements in colorectal histology:
 
-- Metamyelocytes exhibit an indented (“kidney‑shaped”) nucleus; granule content is mature. They cannot proliferate and are the last stage before band cells and fully mature granulocytes. 
+| Label | Tissue Type                        |
+|-------|------------------------------------|
+| 0     | Adipose                            |
+| 1     | Background                         |
+| 2     | Debris                             |
+| 3     | Lymphocytes                        |
+| 4     | Mucus                              |
+| 5     | Smooth muscle                      |
+| 6     | Normal colon mucosa                |
+| 7     | Cancer-associated stroma           |
+| 8     | Colorectal adenocarcinoma epithelium |
 
-- Promyelocytes are ≈ 12–20 μm precursors with basophilic cytoplasm containing primary (azurophilic) granules; their nucleus is round with visible nucleoli. 
-Wikipedia
+## EDA
+### t-SNE
+![](./img/tsne.png)
 
-#### Lymphocyte
-Lymphocytes are a type of white blood cell (or leukocyte). They help an organism to fight infections. They occur in the immune system of all vertebrates. All lymphoctes have a large, blob-like nucleus.
+###  Balance
+![](./img/balance.png)
 
-![](./img/Lymphocyte2.jpg)
+## Benchmark Results
 
-#### Monocytes
-Monocytes are a type of white blood cell, part of the human body's immune system. They are usually identified in stained smears by their large two-lobed nuclei. They are a kind of reserve cell which turn into macrophages and immune helper cells called dendritic cells.
-
-![](./img/Monocyte_40x.JPG)
-
-#### Neutrophils
-Neutrophils are the most common type of white blood cell, often called neutrophil granulocytes. They destroy bacteria (and other parasites like fungi) during an infection. They get to the site of an injury within minutes. They have tiny granules full of enzymes and peptides which chop up the bacteria after they have taken them in.
-
-![](./img/20100825_023736_Neutrophil.jpg)
-
-#### Platelet
-A platelet is a cell fragment that circulates in the blood. Platelets are involved in hemostasis through the making of blood clots. A low platelet count (number of platelets in the blood) can cause a person to bleed without their blood clotting (making scabs). A high platelet count can increase the risk of thrombosis (blood clots inside blood vessels), which stops blood from flowing properly.
-
-![](./img/Platelets.jpg)
-
+| Model             | ROC AUC | Accuracy |
+|-------------------|---------|----------|
+| ResNet-18         | 0.983   | 90.7%    |
+| XGBoost           | 0.931   | 64.73%   |
+| Vision Transformer| 0.998   | 97.63%   |

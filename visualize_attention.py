@@ -8,14 +8,16 @@ from dataset import GetMedMNIST
 from torch.utils.data import DataLoader
 from PIL import Image
 
+image_size = 224
+dataset = GetMedMNIST(name='PathMNIST', split='test', size=image_size, hf=False)
+loader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
+images, labels = next(iter(loader))
 
 def visualize_vit_attention(
     model_path: str,
     model_name: str,
-    dataset_name: str = 'PathMNIST',
-    split: str = 'test',
-    image_size: int = 224,
-    batch_size: int = 1,
+    label_idx: int = 1,
+    data_idx: int = 1,
     device: str = 'cuda:0',
     output_path: str = 'attention_heatmap.png',
     overlay_path: str = 'attention_overlay.png',
@@ -32,11 +34,9 @@ def visualize_vit_attention(
     ).to(device)
     model.eval()
 
-    dataset = GetMedMNIST(name=dataset_name, split=split, size=image_size, hf=False)
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
-
-    images, _ = next(iter(loader))
-    image = images[0]
+    
+    idx = np.where(labels == label_idx)[0]
+    image = images[idx][data_idx]
 
     resized_image = Resize((image_size, image_size))(image)
     inputs = processor(images=resized_image, return_tensors='pt', do_rescale=False)
@@ -45,6 +45,7 @@ def visualize_vit_attention(
     with torch.no_grad():
         outputs = model(**inputs)
         attentions = outputs.attentions  # List of (batch, heads, tokens, tokens)
+        print(attentions[-1].shape)
 
     last_attn = attentions[-1][0]  # [num_heads, tokens, tokens]
     cls_attn = last_attn[:, 0, 1:]   # [num_heads, num_patches]
@@ -112,14 +113,12 @@ if __name__ == '__main__':
     visualize_vit_attention(
         model_path='./PathMNIST_ViT/checkpoint-3520',
         model_name='google/vit-base-patch16-224',
-        dataset_name='PathMNIST',
-        split='test',
-        image_size=224,
-        batch_size=1,
+        label_idx=1,
+        data_idx=1,
         device='cuda:0',
         output_path='attention_heatmap.png',
         overlay_path='attention_overlay.png',
-        alpha=0.6,
+        alpha=0.2,
         reduce='all',  # 'mean', 'max', or 'all'
         head=11       # specify head index to override reduce
     )
