@@ -59,3 +59,20 @@ This dataset has 9 classes representing different tissue types and elements in c
 | ResNet-18         | 0.983   | 90.7%    |
 | XGBoost           | 0.931   | 64.73%   |
 | Vision Transformer| 0.998   | 97.63%   |
+
+## Raw attention visualization
+You can visualize raw attention with attention matrix
+
+![](./img/attention_d.png)
+
+By using the first row values:
+
+![](./img/attention_dd.png)
+
+In our case such visualization may look like:
+
+![](./img/attention_heatmap_7-4_head0.png)
+
+and we can overlay it to get:
+
+![](./img/attention_overlay_7-4_head0.png)
